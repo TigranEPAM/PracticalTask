@@ -11,7 +11,7 @@ namespace PracticalTask2.Tests
         {
             HomePage homePage = new(driver);
             CareersPage careersPage = new(driver);
-            SearchResultsPage searchResultsPage = new(driver);
+            JobSearchResultsPage searchResultsPage = new(driver);
             JobDetailsPage jobDetailsPage = new(driver);
 
             homePage.ClickCareers();
