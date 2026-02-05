@@ -1,20 +1,22 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Support.UI;
 
 namespace PracticalTask2.Pages
 {
     public class HomePage(IWebDriver driver) : BasePage(driver)
     {
-        private static readonly By careersButton = By.LinkText("Careers");
-        private static readonly By magnifierIcon = By.CssSelector("button.header-search__button.header__icon");
-        private static readonly By searchInput = By.Id("new_form_search");
-        private static readonly By searchPanel = By.ClassName("header-search__panel");
-        private static readonly By findButtonLocator = By.XPath(".//*[@class='search-results__input-holder']/following-sibling::button");
+        private readonly By magnifierIcon = By.CssSelector("button.header-search__button.header__icon");
+        private readonly By searchInput = By.Id("new_form_search");
+        private readonly By searchPanel = By.ClassName("header-search__panel");
+        private readonly By findButtonLocator =
+            By.XPath(".//*[@class='search-results__input-holder']/following-sibling::button");
+        private By TopNavigationButton(string buttonText) =>
+            By.XPath($"//nav[@class='top-navigation-ui-23']//span/a[text()='{buttonText}']");
 
-        public void ClickCareers()
+        public void ClickTopNavigationButton(string buttonText)
         {
-            ClickElement(careersButton);
+            var locator = TopNavigationButton(buttonText);
+            WaitForElementToBeClickable(locator);
+            ClickElement(locator);
         }
 
         public void Search(string phrase)

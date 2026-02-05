@@ -4,7 +4,7 @@ namespace PracticalTask2.Pages
 {
     public class SearchResultsPage(IWebDriver driver) : BasePage(driver)
     {
-        private static readonly By searchResultLinks = By.CssSelector("a.search-results__title-link");
+        private readonly By searchResultLinks = By.CssSelector("a.search-results__title-link");
 
         public bool AllLinksContainKeyword(string keyword)
         {
