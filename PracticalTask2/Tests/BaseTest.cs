@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -24,6 +21,7 @@ namespace PracticalTask2.Tests
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
+            driver.Navigate().GoToUrl("https://www.epam.com/");
         }
 
         [TearDown]
