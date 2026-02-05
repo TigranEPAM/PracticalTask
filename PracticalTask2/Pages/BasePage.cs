@@ -1,19 +1,14 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 
 namespace PracticalTask2.Pages
 {
-    public abstract class BasePage
+    public abstract class BasePage(IWebDriver driver, int timeoutSeconds = BasePage.DefaultTimeoutSeconds)
     {
-        protected readonly IWebDriver Driver;
-        protected readonly WebDriverWait Wait;
+        protected readonly IWebDriver Driver = driver;
+        protected readonly WebDriverWait Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
         private const int DefaultTimeoutSeconds = 15;
-
-        protected BasePage(IWebDriver driver, int timeoutSeconds = DefaultTimeoutSeconds)
-        {
-            Driver = driver;
-            Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
-        }
 
         protected IWebElement WaitForElement(By locator)
         {
@@ -84,9 +79,25 @@ namespace PracticalTask2.Pages
         {
             ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView(true);", element);
         }
+
+        protected void ScrollIntoView(By locator)
+        {
+            var element = WaitForElement(locator);
+            Actions actions = new(Driver);
+            actions.MoveToElement(element).Perform();
+        }
+
         protected void ScrollIntoViewAndClick(By locator)
         {
             var element = Driver.FindElement(locator);
+            ((IJavaScriptExecutor)Driver)
+                .ExecuteScript("arguments[0].scrollIntoView(true);", element);
+            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", element);
+        }
+
+        protected void ScrollIntoViewAndClickFirst(By locator)
+        {
+            var element = Driver.FindElements(locator).FirstOrDefault();
             ((IJavaScriptExecutor)Driver)
                 .ExecuteScript("arguments[0].scrollIntoView(true);", element);
             ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", element);

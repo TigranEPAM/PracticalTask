@@ -4,7 +4,7 @@ namespace PracticalTask2.Pages
 {
     public class CareersPage(IWebDriver driver) : BasePage(driver)
     {
-        private static readonly By startYourSearchHereButton = By.XPath("//a[.//span[text()='Start Your Search Here']]");
+        private readonly By startYourSearchHereButton = By.XPath("//a[.//span[text()='Start Your Search Here']]");
 
         public void ClickStartYourSearch()
         {

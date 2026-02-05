@@ -14,7 +14,7 @@ namespace PracticalTask2.Tests
             JobSearchResultsPage searchResultsPage = new(driver);
             JobDetailsPage jobDetailsPage = new(driver);
 
-            homePage.ClickCareers();
+            homePage.ClickTopNavigationButton("Careers");
             careersPage.ClickStartYourSearch();
             searchResultsPage.EnterKeyword(expectedKeyword);
             searchResultsPage.SelectRemote();
