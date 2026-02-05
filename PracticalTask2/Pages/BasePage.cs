@@ -34,6 +34,25 @@ namespace PracticalTask2.Pages
                 }
             });
         }
+        protected IReadOnlyCollection<IWebElement> WaitForElements(By locator)
+        {
+            return Wait.Until(driver =>
+            {
+                try
+                {
+                    var elements = driver.FindElements(locator);
+                    return elements.Any(e => e.Displayed) ? elements.Where(e => e.Displayed).ToList() : null;
+                }
+                catch (NoSuchElementException)
+                {
+                    return null;
+                }
+                catch (StaleElementReferenceException)
+                {
+                    return null;
+                }
+            });
+        }
 
         protected IWebElement WaitForElementToBeClickable(By locator)
         {
