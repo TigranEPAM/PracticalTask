@@ -7,7 +7,7 @@ namespace PracticalTask2.Tests
     public class DownloadTests : BaseTest
     {
         [TestCase("EPAM_Corporate_Overview_Sept_25.pdf")]
-        public async Task ValidateDownloadFile(string fileName)
+        public void ValidateDownloadFile(string fileName)
         {
             HomePage homePage = new(driver);
             AboutPage aboutPage = new(driver);
