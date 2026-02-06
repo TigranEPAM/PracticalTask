@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
 
-namespace PracticalTask2.Pages
+namespace PracticalTask2.Business.Pages
 {
     public class JobSearchResultsPage(IWebDriver driver) : BasePage(driver)
     {

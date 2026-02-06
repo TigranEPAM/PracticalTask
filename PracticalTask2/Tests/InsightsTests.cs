@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using PracticalTask2.Pages;
+using PracticalTask2.Business.Pages;
 
 namespace PracticalTask2.Tests
 {
@@ -9,10 +9,9 @@ namespace PracticalTask2.Tests
         [TestCase("Evolving into Agentic AI: Turning Theory into Action")]
         public async Task ValidateTitleOfTheArticle(string expectedText)
         {
-            HomePage homePage = new(driver);
-            InsightsPage insightsPage = new(driver);
-            EBooksPage eBooksPage = new(driver);
-            driver.Navigate().GoToUrl("https://www.epam.com/");
+            HomePage homePage = new(Driver);
+            InsightsPage insightsPage = new(Driver);
+            EBooksPage eBooksPage = new(Driver);
 
             homePage.ClickTopNavigationButton("Insights");
             insightsPage.NavigateToReadMoreLinkOnThirdTab();

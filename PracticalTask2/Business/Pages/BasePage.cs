@@ -2,7 +2,7 @@
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 
-namespace PracticalTask2.Pages
+namespace PracticalTask2.Business.Pages
 {
     public abstract class BasePage(IWebDriver driver, int timeoutSeconds = BasePage.DefaultTimeoutSeconds)
     {

@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using PracticalTask2.Pages;
+using PracticalTask2.Business.Pages;
 
 namespace PracticalTask2.Tests
 {
@@ -11,9 +11,8 @@ namespace PracticalTask2.Tests
         [TestCase("Automation")]
         public void GlobalSearch_Should_Return_Results_With_Keyword(string keyword)
         {
-            HomePage homePage = new(driver);
-            SearchResultsPage searchResultsPage = new(driver);
-            driver.Navigate().GoToUrl("https://www.epam.com/");
+            HomePage homePage = new(Driver);
+            SearchResultsPage searchResultsPage = new(Driver);
 
             homePage.Search(keyword);
             var allLinksContainKeyword = searchResultsPage.AllLinksContainKeyword(keyword);
