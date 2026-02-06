@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using PracticalTask2.Pages;
+using PracticalTask2.Business.Pages;
 
 namespace PracticalTask2.Tests
 {
@@ -9,9 +9,8 @@ namespace PracticalTask2.Tests
         [TestCase("EPAM_Corporate_Overview_Sept_25.pdf")]
         public void ValidateDownloadFile(string fileName)
         {
-            HomePage homePage = new(driver);
-            AboutPage aboutPage = new(driver);
-            driver.Navigate().GoToUrl("https://www.epam.com/");
+            HomePage homePage = new(Driver);
+            AboutPage aboutPage = new(Driver);
 
             string downloadFolder = Path.Combine(Path.GetTempPath(), "EPAMDownloads");
             homePage.ClickTopNavigationButton("About");
