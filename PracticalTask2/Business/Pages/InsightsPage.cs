@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
 
-namespace PracticalTask2.Pages
+namespace PracticalTask2.Business.Pages
 {
     public class InsightsPage(IWebDriver driver) : BasePage(driver)
     {
@@ -10,6 +10,7 @@ namespace PracticalTask2.Pages
 
         public void NavigateToReadMoreLinkOnThirdTab()
         {
+            WaitForElement(sliderRightButton);
             ScrollIntoViewAndClickFirst(sliderRightButton);
             ScrollIntoViewAndClickFirst(sliderRightButton);
             WaitForElement(targetSlide);

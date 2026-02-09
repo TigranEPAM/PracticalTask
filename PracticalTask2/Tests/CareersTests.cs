@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using PracticalTask2.Pages;
+using PracticalTask2.Business.Pages;
 
 namespace PracticalTask2.Tests
 {
@@ -9,10 +9,10 @@ namespace PracticalTask2.Tests
         [TestCase("SAP")]
         public void Job_Title_Should_Contain_Programming_Language(string expectedKeyword)
         {
-            HomePage homePage = new(driver);
-            CareersPage careersPage = new(driver);
-            JobSearchResultsPage searchResultsPage = new(driver);
-            JobDetailsPage jobDetailsPage = new(driver);
+            HomePage homePage = new(Driver);
+            CareersPage careersPage = new(Driver);
+            JobSearchResultsPage searchResultsPage = new(Driver);
+            JobDetailsPage jobDetailsPage = new(Driver);
 
             homePage.ClickTopNavigationButton("Careers");
             careersPage.ClickStartYourSearch();
