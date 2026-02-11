@@ -75,6 +75,13 @@ namespace PracticalTask2.Business.Pages
             element.Click();
         }
 
+        protected void Hover(By locator)
+        {
+            var element = WaitForElement(locator);
+            Actions actions = new(Driver);
+            actions.MoveToElement(element).Perform();
+        }
+
         protected void ScrollIntoView(IWebElement element)
         {
             ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView(true);", element);
