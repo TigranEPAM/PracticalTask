@@ -1,5 +1,5 @@
-﻿using PracticalTask2.Core.Configuration;
-using PracticalTask2.Core.Driver;
+﻿using PracticalTask2.Core.Driver;
+using PracticalTask2.Core.Configuration;
 using Reqnroll;
 
 namespace PracticalTask2.BDD.Hooks
