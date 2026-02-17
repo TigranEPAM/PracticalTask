@@ -23,37 +23,40 @@ namespace PracticalTask2.Core.APIClient
                 configureSerialization: s => s.UseSystemTextJson(serializerOptions));
         }
 
-        public async Task<List<User>> GetUsers()
+        public async Task<RestResponse<List<User>>> GetUsers()
         {
             var request = new RestRequest(Endpoint, Method.Get);
-            var response = await _client.GetAsync<List<User>>(request);
-            return response!;
+            var response = await _client.ExecuteAsync<List<User>>(request);
+            return response;
         }
 
-        public async Task<User> CreateUser(User user)
+        public async Task<RestResponse<User>> CreateUser(User user)
         {
             var request = new RestRequest(Endpoint, Method.Post);
             request.AddJsonBody(user);
-
-            var response = await _client.PostAsync<User>(request);
-            return response!;
+            var response = await _client.ExecuteAsync<User>(request);
+            return response;
         }
-
-        public async Task<User> UpdateUser(string userId, User user)
+        public async Task<RestResponse<User>> UpdateUser(string userId, User user)
         {
             var request = new RestRequest($"{Endpoint}/{userId}", Method.Put);
             request.AddJsonBody(user);
 
-            var response = await _client.PutAsync<User>(request);
-            return response!;
+            var response = await _client.ExecuteAsync<User>(request);
+            return response;
         }
-        public async Task<bool> DeleteUser(string userId)
+        public async Task<RestResponse> DeleteUser(string userId)
         {
             var request = new RestRequest($"{Endpoint}/{userId}", Method.Delete);
-            var response = await _client.DeleteAsync(request);
+            var response = await _client.ExecuteAsync(request);
+            return response;
+        }
 
-            // Returns true if the status code is 200 or 204
-            return response.IsSuccessful;
+        public async Task<RestResponse> GetInvalidEndpoint()
+        {
+            var request = new RestRequest("invalidendpoint", Method.Get);
+            var response = await _client.ExecuteAsync(request);
+            return response;
         }
     }
 }

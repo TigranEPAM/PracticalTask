@@ -15,7 +15,11 @@ namespace PracticalTask2.Tests.APITests
         [Test]
         public async Task Task1_GetUsers_ShouldReturnListOfUsers()
         {
-            var users = await _usersClient.GetUsers();
+            var response = await _usersClient.GetUsers();
+
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            var users = response.Data!;
             foreach (var user in users)
             {
                 user.Id.Should().BeGreaterThan(0);
@@ -24,22 +28,31 @@ namespace PracticalTask2.Tests.APITests
                 user.Email.Should().NotBeNullOrEmpty();
                 user.Company.Should().NotBeNull();
                 user.Company.Name.Should().NotBeNullOrEmpty();
+                user.Address.Should().NotBeNull();
+                user.Address.Street.Should().NotBeNullOrEmpty();
+                user.Phone.Should().NotBeNullOrEmpty();
+                user.Website.Should().NotBeNullOrEmpty();
             }
         }
 
         [Test]
         public async Task Task2_GetUsers_ShouldValidateContentTypeHeader()
         {
-            var users = await _usersClient.GetUsers();
-            users.Should().NotBeNull();
-            users.Select(u => u.Id).Distinct().Count().Should().Be(users.Count);
+            var response = await _usersClient.GetUsers();
+
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            response.ContentType.Should().Be("application/json; charset=utf-8");
         }
 
         [Test]
         public async Task Task3_GetUsers_ShouldValidateUniqueIdsAndNonEmptyFields()
         {
-            var users = await _usersClient.GetUsers();
+            var response = await _usersClient.GetUsers();
 
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            var users = response.Data!;
             users.Should().NotBeNull();
             users.Count.Should().Be(10);
             users.Select(u => u.Id).Distinct().Count().Should().Be(10);
@@ -62,8 +75,11 @@ namespace PracticalTask2.Tests.APITests
                 Username = "johndoe"
             };
 
-            var createdUser = await _usersClient.CreateUser(newUser);
+            var response = await _usersClient.CreateUser(newUser);
 
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.Created);
+
+            var createdUser = response.Data!;
             createdUser.Should().NotBeNull();
             createdUser.Id.Should().BeGreaterThan(0);
             createdUser.Name.Should().Be(newUser.Name);
@@ -73,9 +89,8 @@ namespace PracticalTask2.Tests.APITests
         [Test]
         public async Task Task5_InvalidEndpoint_ShouldReturn404()
         {
-            //var response = await _usersClient.GetInvalidEndpoint();
-
-            //response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            var response = await _usersClient.GetInvalidEndpoint();
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
         }
     }
 }
