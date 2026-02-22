@@ -27,6 +27,9 @@ namespace PracticalTask2.Core.Driver
             options.AddUserProfilePreference("download.prompt_for_download", false);
             options.AddUserProfilePreference("safebrowsing.enabled", true);
             options.AddArgument("--start-maximized");
+            var headless = Environment.GetEnvironmentVariable("HEADLESS") ?? "false";
+            if (headless.Equals("true", StringComparison.OrdinalIgnoreCase))
+                options.AddArgument("--headless=new");
             return options;
         }
     }
