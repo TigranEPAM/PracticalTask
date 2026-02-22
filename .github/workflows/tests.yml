@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 6 * * *' # runs daily at 06:00 UTC
   workflow_dispatch:
     inputs:
       browser:
@@ -27,8 +27,10 @@ on:
 jobs:
   setup:
     runs-on: windows-latest
+    outputs:
+      restored-artifact: restored-solution
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup .NET
@@ -43,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: restored-solution
-          path: .  # uploads entire repo with restored packages
+          path: .  # uploads the repo with restored packages
 
   api-tests:
     runs-on: windows-latest
@@ -66,21 +68,23 @@ jobs:
   ui-tests:
     runs-on: windows-latest
     needs: api-tests
+    if: always() # UI tests run even if API tests fail
     steps:
       - name: Download Restored Solution
         uses: actions/download-artifact@v4
         with:
           name: restored-solution
 
+      # Set environment variables for dynamic browser & headless mode
       - name: Setup Browser & Environment
         run: |
           echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
           echo "HEADLESS=${{ github.event.inputs.headless || 'false' }}" >> $GITHUB_ENV
 
-      - name: Run UI Tests
+      - name: Run UI Tests (NUnit + BDD)
         run: dotnet test --filter Category!=API --logger "trx;LogFileName=ui.trx"
 
-      - name: Upload UI Results
+      - name: Upload UI Results & Screenshots
         uses: actions/upload-artifact@v4
         with:
           name: ui-results
