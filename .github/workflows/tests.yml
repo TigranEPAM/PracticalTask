@@ -1,0 +1,74 @@
+name: Tests Pipeline
+
+on:
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser to run UI tests'
+        required: true
+        default: 'Chrome'
+        type: choice
+        options:
+          - Chrome
+          - Edge
+
+jobs:
+  api-tests:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Run API Tests
+        run: dotnet test --filter Category=API --logger "trx;LogFileName=api.trx"
+
+      - name: Upload API Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-results
+          path: '**/*.trx'
+
+  ui-tests:
+    runs-on: windows-latest
+    needs: api-tests
+    if: always()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Set Browser
+        run: |
+          echo "Browser=${{ github.event.inputs.browser || 'Chrome' }}" > appsettings.json
+
+      - name: Run UI Tests
+        run: dotnet test --filter Category!=API --logger "trx;LogFileName=ui.trx"
+
+      - name: Upload UI Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-results
+          path: |
+            **/*.trx
+            **/*.png
