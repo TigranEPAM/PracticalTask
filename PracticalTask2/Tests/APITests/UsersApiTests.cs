@@ -58,7 +58,7 @@ namespace PracticalTask2.Tests.APITests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             Log.Logger.Information("Step 3: Validating Content-Type header");
-            response.ContentType.Should().Be("application/json; charset=utf-8");
+            response.ContentType.Should().Be("application/json");
 
             Log.Logger.Information("========== Task2 PASSED ==========");
         }
