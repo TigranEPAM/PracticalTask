@@ -10,7 +10,11 @@ namespace PracticalTask2.Core.Configuration
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
                 .Build();
+
+            var browserValue = Environment.GetEnvironmentVariable("BROWSER") ?? config["Browser"];
+            var headlessValue = Environment.GetEnvironmentVariable("HEADLESS") ?? config["Headless"];
 
             Browser = Enum.Parse<BrowserType>(config["Browser"]);
             Headless = bool.Parse(config["Headless"] ?? "false");
