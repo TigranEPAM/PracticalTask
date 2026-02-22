@@ -6,6 +6,7 @@ namespace PracticalTask2.Tests
 {
     public class CareersTests : BaseTest
     {
+        [Category("UI")]
         [TestCase("SAP")]
         public void Job_Title_Should_Contain_Programming_Language(string expectedKeyword)
         {
