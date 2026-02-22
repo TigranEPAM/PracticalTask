@@ -15,6 +15,14 @@ on:
         options:
           - Chrome
           - Edge
+      headless:
+        description: 'Run UI tests in headless mode'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   api-tests:
