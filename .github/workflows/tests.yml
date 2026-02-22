@@ -82,7 +82,7 @@ jobs:
           echo "HEADLESS=${{ github.event.inputs.headless || 'false' }}" >> $GITHUB_ENV
 
       - name: Run UI Tests (NUnit + BDD)
-        run: dotnet test --filter Category!=API --logger "trx;LogFileName=ui.trx"
+        run: dotnet test --filter Category=UI --logger "trx;LogFileName=ui.trx"
 
       - name: Upload UI Results & Screenshots
         uses: actions/upload-artifact@v4
