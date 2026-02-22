@@ -25,9 +25,8 @@ on:
           - 'false'
 
 jobs:
-  api-tests:
+  setup:
     runs-on: windows-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,8 +36,23 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
+      - name: Restore Solution
         run: dotnet restore
+
+      - name: Upload Restored Solution
+        uses: actions/upload-artifact@v4
+        with:
+          name: restored-solution
+          path: .  # uploads entire repo with restored packages
+
+  api-tests:
+    runs-on: windows-latest
+    needs: setup
+    steps:
+      - name: Download Restored Solution
+        uses: actions/download-artifact@v4
+        with:
+          name: restored-solution
 
       - name: Run API Tests
         run: dotnet test --filter Category=API --logger "trx;LogFileName=api.trx"
@@ -52,23 +66,16 @@ jobs:
   ui-tests:
     runs-on: windows-latest
     needs: api-tests
-    if: always()
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Download Restored Solution
+        uses: actions/download-artifact@v4
         with:
-          dotnet-version: '8.0.x'
+          name: restored-solution
 
-      - name: Restore
-        run: dotnet restore
-
-      - name: Set Browser
+      - name: Setup Browser & Environment
         run: |
-          echo "Browser=${{ github.event.inputs.browser || 'Chrome' }}" > appsettings.json
+          echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
+          echo "HEADLESS=${{ github.event.inputs.headless || 'false' }}" >> $GITHUB_ENV
 
       - name: Run UI Tests
         run: dotnet test --filter Category!=API --logger "trx;LogFileName=ui.trx"
