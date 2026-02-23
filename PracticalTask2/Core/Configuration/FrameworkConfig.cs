@@ -12,7 +12,10 @@ namespace PracticalTask2.Core.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            Browser = Enum.Parse<BrowserType>(config["Browser"]);
+            var browserEnv = Environment.GetEnvironmentVariable("BROWSER");
+            Browser = !string.IsNullOrEmpty(browserEnv)
+                ? Enum.Parse<BrowserType>(browserEnv, ignoreCase: true)
+                : Enum.Parse<BrowserType>(config["Browser"]);
             BaseUrl = config["BaseUrl"];
             LogLevel = config["LogLevel"];
             ApiBaseUrl = config["ApiBaseUrl"];
