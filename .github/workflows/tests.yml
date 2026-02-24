@@ -3,8 +3,10 @@ name: Tests Pipeline
 on:
   pull_request:
     branches: [ main ]
+
   schedule:
     - cron: '0 6 * * *'
+
   workflow_dispatch:
     inputs:
       browser:
@@ -17,15 +19,16 @@ on:
           - Edge
 
 jobs:
+
   api-tests:
     name: Run API Tests
     runs-on: windows-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 10
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
@@ -37,30 +40,30 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run API Tests
-        run: dotnet test --filter Category=API --no-build --configuration Release --logger "trx;LogFileName=api-test-results.trx" --verbosity normal
+        run: dotnet test --filter "Category=API" --no-build --configuration Release --logger "trx;LogFileName=api-test-results.trx"
         continue-on-error: true
 
-      - name: Publish API Test Results
+      - name: Upload API Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: api-test-results
           path: |
-            **/TestResults/*.trx
             **/*.trx
           retention-days: 30
+
 
   ui-tests:
     name: Run UI Tests
     runs-on: windows-latest
     needs: api-tests
     if: always()
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 10
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
@@ -71,76 +74,28 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      - name: Install Chrome Driver
-        if: ${{ github.event.inputs.browser == 'Chrome' || github.event.inputs.browser == '' || github.event_name != 'workflow_dispatch' }}
-        shell: pwsh
-        run: |
-          Write-Host "Installing Chrome and ChromeDriver..."
-          choco install googlechrome selenium-chrome-driver -y --no-progress --ignore-checksums
-          
+      - name: Install Chrome
+        if: ${{ github.event.inputs.browser == 'Chrome' || github.event_name != 'workflow_dispatch' }}
+        run: choco install googlechrome selenium-chrome-driver -y --no-progress --ignore-checksums
+
       - name: Install Edge Driver
         if: ${{ github.event.inputs.browser == 'Edge' }}
-        shell: pwsh
-        run: |
-          Write-Host "Installing Edge Driver..."
-          choco install selenium-edge-driver -y --no-progress --ignore-checksums
+        run: choco install selenium-edge-driver -y --no-progress --ignore-checksums
 
-      - name: Setup Test Environment
-        shell: bash
-        run: |
-          echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
-          echo "HEADLESS=true" >> $GITHUB_ENV
-          echo "TEST_SCREENSHOT_PATH=${{ github.workspace }}/TestResults/Screenshots" >> $GITHUB_ENV
-
-      - name: Create Screenshot Directory
-        run: New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/TestResults/Screenshots"
+      - name: Set Browser Environment Variable
+        run: echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
 
       - name: Run UI Tests
-        run: dotnet test --filter "Category=UI" --no-build --configuration Release --logger "trx;LogFileName=ui-test-results.trx" --verbosity normal -- NUnit.DefaultTimeout=120000
+        run: dotnet test --filter "Category=UI" --no-build --configuration Release --logger "trx;LogFileName=ui-test-results.trx"
         timeout-minutes: 30
         continue-on-error: true
 
-      - name: Publish UI Test Results & Screenshots
+      - name: Upload UI Test Results & Screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ui-test-results-${{ github.event.inputs.browser || 'Chrome' }}
           path: |
-            **/TestResults/*.trx
             **/*.trx
-            **/TestResults/Screenshots/**
-            **/*.png
-            **/*.jpg
+            **/Screenshots/**/*.png
           retention-days: 30
-
-  publish-summary:
-    name: Publish Test Summary
-    runs-on: windows-latest
-    needs: [api-tests, ui-tests]
-    if: always()
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Download API Results
-        uses: actions/download-artifact@v4
-        with:
-          name: api-test-results
-          path: ./api-results
-        continue-on-error: true
-
-      - name: Download UI Results
-        uses: actions/download-artifact@v4
-        with:
-          name: ui-test-results-${{ github.event.inputs.browser || 'Chrome' }}
-          path: ./ui-results
-        continue-on-error: true
-
-      - name: Publish Test Summary
-        uses: dorny/test-reporter@v1
-        if: always()
-        with:
-          name: Test Results Summary
-          path: '**/*.trx'
-          reporter: dotnet-trx
-          fail-on-error: false
