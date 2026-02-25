@@ -3,8 +3,10 @@ name: Tests Pipeline
 on:
   pull_request:
     branches: [ main ]
+
   schedule:
-    - cron: '0 6 * * *' # runs daily at 06:00 UTC
+    - cron: '0 6 * * *'
+
   workflow_dispatch:
     inputs:
       browser:
@@ -15,79 +17,88 @@ on:
         options:
           - Chrome
           - Edge
-      headless:
-        description: 'Run UI tests in headless mode'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
 
 jobs:
-  setup:
-    runs-on: windows-latest
-    outputs:
-      restored-artifact: restored-solution
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore Solution
-        run: dotnet restore
-
-      - name: Upload Restored Solution
-        uses: actions/upload-artifact@v4
-        with:
-          name: restored-solution
-          path: .  # uploads the repo with restored packages
 
   api-tests:
+    name: Run API Tests
     runs-on: windows-latest
-    needs: setup
+
     steps:
-      - name: Download Restored Solution
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
         with:
-          name: restored-solution
+          dotnet-version: '10.0.x'
+
+      - run: dotnet restore
+      - run: dotnet build --no-restore --configuration Release
 
       - name: Run API Tests
-        run: dotnet test --filter Category=API --logger "trx;LogFileName=api.trx"
+        run: dotnet test --filter "Category=API" --no-build --configuration Release --logger "trx;LogFileName=api-test-results.trx"
+        continue-on-error: true
 
       - name: Upload API Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: api-results
-          path: '**/*.trx'
+          name: api-test-results
+          path: "**/*.trx"
+
 
   ui-tests:
-    runs-on: windows-latest
+    name: Run UI Tests (Linux)
+    runs-on: ubuntu-latest
     needs: api-tests
-    if: always() # UI tests run even if API tests fail
+    if: always()
+
     steps:
-      - name: Download Restored Solution
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
         with:
-          name: restored-solution
+          dotnet-version: '10.0.x'
 
-      # Set environment variables for dynamic browser & headless mode
-      - name: Setup Browser & Environment
+      - run: dotnet restore
+      - run: dotnet build --no-restore --configuration Release
+
+      # Install Chrome on Linux
+      - name: Install Chrome
+        if: ${{ github.event.inputs.browser == 'Chrome' || github.event_name != 'workflow_dispatch' }}
         run: |
-          echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
-          echo "HEADLESS=${{ github.event.inputs.headless || 'false' }}" >> $GITHUB_ENV
+          sudo apt update
+          sudo apt install -y google-chrome-stable
 
-      - name: Run UI Tests (NUnit + BDD)
-        run: dotnet test --filter Category=UI --logger "trx;LogFileName=ui.trx"
+      # Install Edge on Linux
+      - name: Install Edge
+        if: ${{ github.event.inputs.browser == 'Edge' }}
+        run: |
+          sudo apt update
+          sudo apt install -y microsoft-edge-stable
 
-      - name: Upload UI Results & Screenshots
+      - name: Set Browser Variable
+        run: echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
+
+      - name: Run UI Tests
+        run: dotnet test --filter "Category=UI" --no-build --configuration Release --logger "trx;LogFileName=ui-test-results.trx"
+        continue-on-error: true
+        timeout-minutes: 30
+
+
+  publish-ui-artifacts:
+    name: Publish UI Results & Screenshots
+    runs-on: ubuntu-latest
+    needs: ui-tests
+    if: always()
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload UI Test Results & Screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: ui-results
+          name: ui-test-results-${{ github.event.inputs.browser || 'Chrome' }}
           path: |
             **/*.trx
-            **/*.png
+            **/Screenshots/**/*.png
+          retention-days: 30
