@@ -6,6 +6,7 @@ namespace PracticalTask2.Tests
 {
     public class GlobalSearchTests : BaseTest
     {
+        [Category("UI")]
         [TestCase("open")]
         [TestCase("Cloud")]
         [TestCase("Support")]

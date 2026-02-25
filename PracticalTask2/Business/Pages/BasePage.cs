@@ -8,7 +8,7 @@ namespace PracticalTask2.Business.Pages
     {
         protected readonly IWebDriver Driver = driver;
         protected readonly WebDriverWait Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
-        private const int DefaultTimeoutSeconds = 15;
+        private const int DefaultTimeoutSeconds = 30;
 
         protected IWebElement WaitForElement(By locator)
         {

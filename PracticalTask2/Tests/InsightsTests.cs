@@ -6,6 +6,7 @@ namespace PracticalTask2.Tests
 {
     public class InsightsTests : BaseTest
     {
+        [Category("UI")]
         [TestCase("Evolving into Agentic AI: Turning Theory into Action")]
         public async Task ValidateTitleOfTheArticle(string expectedText)
         {

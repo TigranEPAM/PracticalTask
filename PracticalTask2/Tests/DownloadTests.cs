@@ -6,6 +6,7 @@ namespace PracticalTask2.Tests
 {
     public class DownloadTests : BaseTest
     {
+        [Category("UI")]
         [TestCase("EPAM_Corporate_Overview_Sept_25.pdf")]
         public void ValidateDownloadFile(string fileName)
         {
