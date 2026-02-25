@@ -8,11 +8,11 @@ namespace PracticalTask2.Core.Utilities
         {
             try
             {
-                var screenshotPath = Environment.GetEnvironmentVariable("TEST_SCREENSHOT_PATH")
-                    ?? Path.Combine(Directory.GetCurrentDirectory(), "Screenshots");
+                var screenshotPath = Path.Combine(Directory.GetCurrentDirectory(), "Screenshots");
 
                 Directory.CreateDirectory(screenshotPath);
 
+                testName = string.Concat(testName.Split(Path.GetInvalidFileNameChars()));
                 var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
                 var fileName = $"{testName}_{DateTime.Now:yyyyMMdd_HHmmss}.png";
                 var fullPath = Path.Combine(screenshotPath, fileName);
