@@ -10,20 +10,18 @@ namespace PracticalTask2.Core.Configuration
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables()
                 .Build();
 
-            var browserValue = Environment.GetEnvironmentVariable("BROWSER") ?? config["Browser"];
-
-            Browser = Enum.Parse<BrowserType>(browserValue, true);
-            Headless = bool.Parse(config["Headless"] ?? "false");
+            var browserEnv = Environment.GetEnvironmentVariable("BROWSER");
+            Browser = !string.IsNullOrEmpty(browserEnv)
+                ? Enum.Parse<BrowserType>(browserEnv, ignoreCase: true)
+                : Enum.Parse<BrowserType>(config["Browser"]);
             BaseUrl = config["BaseUrl"];
             LogLevel = config["LogLevel"];
             ApiBaseUrl = config["ApiBaseUrl"];
         }
 
         public static BrowserType Browser { get; }
-        public static bool Headless { get; }
         public static string BaseUrl { get; }
         public static string LogLevel { get; }
         public static string ApiBaseUrl { get; }

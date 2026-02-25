@@ -15,7 +15,7 @@ namespace PracticalTask2.Core.Driver
             {
                 BrowserType.Chrome => new ChromeDriver(GetChromeOptions()),
                 BrowserType.Firefox => new FirefoxDriver(),
-                BrowserType.Edge => new EdgeDriver(),
+                BrowserType.Edge => new EdgeDriver(GetEdgeOptions()),
                 _ => throw new ArgumentException("Unsupported browser")
             };
         }
@@ -26,6 +26,14 @@ namespace PracticalTask2.Core.Driver
             options.AddUserProfilePreference("download.default_directory", downloadFolder);
             options.AddUserProfilePreference("download.prompt_for_download", false);
             options.AddUserProfilePreference("safebrowsing.enabled", true);
+            options.AddArgument("--start-maximized");
+            return options;
+        }
+
+        private static EdgeOptions GetEdgeOptions()
+        {
+            var options = new EdgeOptions();
+            options.AddUserProfilePreference("download.default_directory", downloadFolder);
             options.AddArgument("--start-maximized");
             return options;
         }
