@@ -62,20 +62,6 @@ jobs:
       - run: dotnet restore
       - run: dotnet build --no-restore --configuration Release
 
-      # Install Chrome on Linux
-      - name: Install Chrome
-        if: ${{ github.event.inputs.browser == 'Chrome' || github.event_name != 'workflow_dispatch' }}
-        run: |
-          sudo apt update
-          sudo apt install -y google-chrome-stable
-
-      # Install Edge on Linux
-      - name: Install Edge
-        if: ${{ github.event.inputs.browser == 'Edge' }}
-        run: |
-          sudo apt update
-          sudo apt install -y microsoft-edge-stable
-
       - name: Set Browser Variable
         run: echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
 
