@@ -14,9 +14,8 @@ namespace PracticalTask2.Core.Configuration
                 .Build();
 
             var browserValue = Environment.GetEnvironmentVariable("BROWSER") ?? config["Browser"];
-            var headlessValue = Environment.GetEnvironmentVariable("HEADLESS") ?? config["Headless"];
 
-            Browser = Enum.Parse<BrowserType>(config["Browser"]);
+            Browser = Enum.Parse<BrowserType>(browserValue, true);
             Headless = bool.Parse(config["Headless"] ?? "false");
             BaseUrl = config["BaseUrl"];
             LogLevel = config["LogLevel"];

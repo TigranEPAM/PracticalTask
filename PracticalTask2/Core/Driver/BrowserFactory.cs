@@ -2,7 +2,6 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
-using PracticalTask2.Core.Configuration;
 
 namespace PracticalTask2.Core.Driver
 {
@@ -28,8 +27,6 @@ namespace PracticalTask2.Core.Driver
             options.AddUserProfilePreference("download.prompt_for_download", false);
             options.AddUserProfilePreference("safebrowsing.enabled", true);
             options.AddArgument("--start-maximized");
-            if (FrameworkConfig.Headless)
-                options.AddArgument("--headless=new");
             return options;
         }
     }
