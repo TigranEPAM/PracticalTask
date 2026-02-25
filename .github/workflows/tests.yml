@@ -98,7 +98,6 @@ jobs:
         with:
           name: ui-test-results-${{ github.event.inputs.browser || 'Chrome' }}
           path: |
-            PracticalTask2/bin/Release/net10.0/*.trx
-            PracticalTask2/bin/Release/net10.0/Screenshots/*.png
+             **/bin/Release/net10.0/Screenshots/**/*.png
           if-no-files-found: warn
           retention-days: 30
