@@ -27,9 +27,10 @@ namespace PracticalTask2.Core.Driver
             options.AddUserProfilePreference("download.default_directory", downloadFolder);
             options.AddUserProfilePreference("download.prompt_for_download", false);
             options.AddUserProfilePreference("safebrowsing.enabled", true);
+            options.AddArgument("--headless=new");
+            options.AddArgument("--window-size=1920,1080");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-dev-shm-usage");
-            options.AddArgument("--start-maximized");
             return options;
         }
 
