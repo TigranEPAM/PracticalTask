@@ -81,7 +81,6 @@ jobs:
 
       - name: Run UI Tests
         run: dotnet test --filter "Category=UI" --no-build --configuration Release --logger "trx;LogFileName=ui-test-results.trx"
-        continue-on-error: true
         timeout-minutes: 30
 
 
@@ -99,6 +98,7 @@ jobs:
         with:
           name: ui-test-results-${{ github.event.inputs.browser || 'Chrome' }}
           path: |
-            **/*.trx
-            **/Screenshots/**/*.png
+            PracticalTask2/bin/Release/net10.0/*.trx
+            PracticalTask2/bin/Release/net10.0/Screenshots/**/*.png
+          if-no-files-found: warn
           retention-days: 30
