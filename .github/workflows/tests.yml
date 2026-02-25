@@ -47,21 +47,19 @@ jobs:
 
 
   ui-tests:
-    name: Run UI Tests (Linux)
+    name: Run UI Tests
     runs-on: windows-latest
     needs: api-tests
     if: always()
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
+      
       - run: dotnet restore
       - run: dotnet build --no-restore --configuration Release
-
+      
       - name: Set Browser Variable
         run: echo "BROWSER=${{ github.event.inputs.browser || 'Chrome' }}" >> $GITHUB_ENV
 
@@ -69,21 +67,14 @@ jobs:
         run: dotnet test --filter "Category=UI" --no-build --configuration Release --logger "trx;LogFileName=ui-test-results.trx"
         timeout-minutes: 30
 
-
-  publish-ui-artifacts:
-    name: Publish UI Results & Screenshots
-    runs-on: ubuntu-latest
-    needs: ui-tests
-    if: always()
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Upload UI Test Results & Screenshots
+      # Upload directly from the runner where tests actually executed
+      - name: Upload UI Results & Screenshots
+        if: always() # Ensure screenshots upload even if tests fail
         uses: actions/upload-artifact@v4
         with:
-          name: ui-test-results-${{ github.event.inputs.browser || 'Chrome' }}
+          name: ui-test-results-${{ github.event.inputs.browser }}
+          # Using a relative path from the repo root is safer
           path: |
-             **/bin/Release/net10.0/Screenshots/**/*.png
+            **/ui-test-results.trx
+            **/bin/Release/net10.0/Screenshots/*.png
           if-no-files-found: warn
-          retention-days: 30
