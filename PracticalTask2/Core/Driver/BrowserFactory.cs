@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.VisualStudio.CodeCoverage;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
@@ -26,6 +27,8 @@ namespace PracticalTask2.Core.Driver
             options.AddUserProfilePreference("download.default_directory", downloadFolder);
             options.AddUserProfilePreference("download.prompt_for_download", false);
             options.AddUserProfilePreference("safebrowsing.enabled", true);
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-dev-shm-usage");
             options.AddArgument("--start-maximized");
             return options;
         }
